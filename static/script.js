@@ -8,8 +8,22 @@ const embedText = async (text) => {
     return inferJson.embeddings;
 };
 
+const spinnerOverlay = document.createElement('div');
+spinnerOverlay.classList.add('spinner-overlay');
+spinnerOverlay.innerHTML = '<div class="spinner"></div>';
+document.body.appendChild(spinnerOverlay);
+
+const showSpinner = () => {
+    spinnerOverlay.style.display = 'flex';
+};
+
+const hideSpinner = () => {
+    spinnerOverlay.style.display = 'none';
+};
+
 textGenForm.addEventListener('submit', async (event) => {
     event.preventDefault();
+    showSpinner();
 
     const textGenInput = document.getElementById('text-gen-input');
     const textGenParagraph = document.querySelector('.text-gen-output');
@@ -21,6 +35,8 @@ textGenForm.addEventListener('submit', async (event) => {
         updateDownloadButtonState(); // Update button state
     } catch (err) {
         console.error(err);
+    } finally {
+        hideSpinner();
     }
 });
 
@@ -49,6 +65,7 @@ const uploadEmbeddings = () => {
 };
 
 fileInput.addEventListener('change', async (event) => {
+    showSpinner();
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
@@ -71,9 +88,13 @@ fileInput.addEventListener('change', async (event) => {
                 });
             } catch (err) {
                 console.error('Error reading or parsing the file', err);
+            } finally {
+                hideSpinner();
             }
         };
         reader.readAsText(file);
+    } else {
+        hideSpinner();
     }
 });
 

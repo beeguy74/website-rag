@@ -13,22 +13,18 @@
     <main>
         <section id="text-gen">
             <h1>Chat with your favorite website!</h1>
-            <p>
-                Model:
-                <a href="https://huggingface.co/google/flan-t5-small" rel="noreferrer"
-                    target="_blank">google/flan-t5-small</a>
-            </p>
-            <p>Here you can create embeddings from the text you provide. This text should be submitted to the
-                /embeddings endpoint.</p>
-            <p>If you have embeddings, you can upload them instead.</p>
+            <p>Here you can create a vector storage from the url you provide.</p>
             <form class="text-gen-form">
-                <label for="text-gen-input">Text prompt</label>
-                <input id="text-gen-input" type="text" value="English: Translate There are many ducks. German:" />
+                <label for="text-gen-input">The url of the website</label>
+                <input id="text-gen-input" type="text" />
                 <button id="text-gen-submit">Submit</button>
                 <button id="download-embeddings" type="button">Download Embeddings</button>
-                <button id="upload-embeddings" type="button">Upload Embeddings</button>
-                <input type="file" id="file-input" style="display: none;" />
                 <p class="text-gen-output"></p>
+            </form>
+            <p>If you have embeddings, you can upload them instead.</p>
+            <form class="text-gen-form">
+                <input type="file" id="file-input" style="display: none;" />
+                <button id="upload-embeddings" type="button">Upload Embeddings</button>
             </form>
         </section>
         <section id="chat">
