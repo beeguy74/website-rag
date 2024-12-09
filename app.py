@@ -55,16 +55,18 @@ async def chat(request: Request):
     reply = response.content
     return {"reply": reply}
 
-@app.get("/embeddings")
-def get_embeddings(input: str):
+@app.get("/parsing")
+def parse_url(input: str):
     loader = create_loader(input)
     docs = loader.load()
-    my_vector_store = InMemoryVectorStore.from_documents(docs, embeddings)
-
     return {
-        "embeddings": [],
-        "test": "testtext"
-        }
+        "docs": docs
+    }
+
+@app.get("/embeddings")
+def get_embeddings():
+    my_vector_store = InMemoryVectorStore.from_documents(docs, embeddings)
+    return {"status": "OK"}
 
 @app.get("/", response_class=HTMLResponse)
 def get_index():

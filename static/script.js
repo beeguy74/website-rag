@@ -1,11 +1,11 @@
 const textGenForm = document.querySelector('.text-gen-form');
-let embeddingsList = [];
+let docsList = [];
 
 const embedText = async (text) => {
-    const inferResponse = await fetch(`embeddings?input=${text}`);
+    const inferResponse = await fetch(`parsing?input=${text}`);
     const inferJson = await inferResponse.json();
 
-    return inferJson.embeddings;
+    return inferJson;
 };
 
 const spinnerOverlay = document.createElement('div');
@@ -30,8 +30,8 @@ textGenForm.addEventListener('submit', async (event) => {
 
     try {
         const embeddings = await embedText(textGenInput.value);
-        embeddingsList = embeddings; // Store embeddings in the variable
-        textGenParagraph.textContent = JSON.stringify(embeddingsList);
+        docsList = embeddings; // Store embeddings in the variable
+        textGenParagraph.textContent = JSON.stringify(docsList);
         updateDownloadButtonState(); // Update button state
     } catch (err) {
         console.error(err);
@@ -47,11 +47,11 @@ const uploadButton = document.getElementById('upload-embeddings');
 const fileInput = document.getElementById('file-input');
 
 const updateDownloadButtonState = () => {
-    downloadButton.disabled = embeddingsList.length === 0;
+    downloadButton.disabled = docsList.length === 0;
 };
 
 const downloadEmbeddings = () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(embeddingsList));
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(docsList));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
     downloadAnchorNode.setAttribute("download", "embeddings.json");
@@ -72,10 +72,10 @@ fileInput.addEventListener('change', async (event) => {
         reader.onload = async (e) => {
             try {
                 const embeddings = JSON.parse(e.target.result);
-                embeddingsList = embeddings; // Store uploaded embeddings in the variable
+                docsList = embeddings; // Store uploaded embeddings in the variable
 
                 const textGenParagraph = document.querySelector('.text-gen-output');
-                textGenParagraph.textContent = JSON.stringify(embeddingsList);
+                textGenParagraph.textContent = JSON.stringify(docsList);
 
                 updateDownloadButtonState(); // Update button state
                 // Optionally, you can send the embeddings to the server
@@ -84,7 +84,7 @@ fileInput.addEventListener('change', async (event) => {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ embeddings: embeddingsList })
+                    body: JSON.stringify({ embeddings: docsList })
                 });
             } catch (err) {
                 console.error('Error reading or parsing the file', err);
@@ -127,6 +127,7 @@ chatForm.addEventListener('submit', async (event) => {
 
     const userMessageElement = document.createElement('div');
     userMessageElement.textContent = `You: ${userMessage}`;
+    userMessageElement.classList.add('user-message');
     chatBox.appendChild(userMessageElement);
 
     chatInput.value = '';
@@ -135,6 +136,7 @@ chatForm.addEventListener('submit', async (event) => {
         const reply = await sendMessage(userMessage);
         const replyMessageElement = document.createElement('div');
         replyMessageElement.textContent = `Bot: ${reply}`;
+        replyMessageElement.classList.add('bot-reply');
         chatBox.appendChild(replyMessageElement);
     } catch (err) {
         console.error('Error sending message:', err);

@@ -93,3 +93,13 @@ button {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.user-message {
+    text-align: right;
+    margin: 0.5rem 0;
+}
+
+.bot-reply {
+    text-align: left;
+    margin: 0.5rem 0;
+}
