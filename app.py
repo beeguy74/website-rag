@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from os import getenv
 from langchain_huggingface import HuggingFaceEmbeddings
 from fastapi.responses import HTMLResponse
@@ -10,6 +10,13 @@ MY_KEY = getenv("MY_KEY")
 embeddings = HuggingFaceEmbeddings(model_name="jinaai/jina-embeddings-v2-small-en")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.post("/receive-embeddings")
+async def receive_embeddings(request: Request):
+    data = await request.json()
+    embeddings = data.get("embeddings")
+    # Process the embeddings as needed
+    return {"status": "OK"}
 
 @app.get("/embeddings")
 def get_embeddings(input: str):

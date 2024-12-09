@@ -25,6 +25,8 @@ textGenForm.addEventListener('submit', async (event) => {
 });
 
 const downloadButton = document.getElementById('download-embeddings');
+const uploadButton = document.getElementById('upload-embeddings');
+const fileInput = document.getElementById('file-input');
 
 const updateDownloadButtonState = () => {
     downloadButton.disabled = embeddingsList.length === 0;
@@ -40,7 +42,37 @@ const downloadEmbeddings = () => {
     downloadAnchorNode.remove();
 };
 
+const uploadEmbeddings = () => {
+    fileInput.click();
+};
+
+fileInput.addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const embeddings = JSON.parse(e.target.result);
+                embeddingsList = embeddings; // Store uploaded embeddings in the variable
+                updateDownloadButtonState(); // Update button state
+                // Optionally, you can send the embeddings to the server
+                await fetch('/receive-embeddings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ embeddings: embeddingsList })
+                });
+            } catch (err) {
+                console.error('Error reading or parsing the file', err);
+            }
+        };
+        reader.readAsText(file);
+    }
+});
+
 downloadButton.addEventListener('click', downloadEmbeddings);
+uploadButton.addEventListener('click', uploadEmbeddings);
 
 // Initialize button state
 updateDownloadButtonState();
