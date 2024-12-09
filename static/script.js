@@ -25,7 +25,9 @@ textGenForm.addEventListener('submit', async (event) => {
 });
 
 const downloadButton = document.getElementById('download-embeddings');
+
 const uploadButton = document.getElementById('upload-embeddings');
+
 const fileInput = document.getElementById('file-input');
 
 const updateDownloadButtonState = () => {
@@ -54,6 +56,10 @@ fileInput.addEventListener('change', async (event) => {
             try {
                 const embeddings = JSON.parse(e.target.result);
                 embeddingsList = embeddings; // Store uploaded embeddings in the variable
+
+                const textGenParagraph = document.querySelector('.text-gen-output');
+                textGenParagraph.textContent = JSON.stringify(embeddingsList);
+
                 updateDownloadButtonState(); // Update button state
                 // Optionally, you can send the embeddings to the server
                 await fetch('/receive-embeddings', {
@@ -76,3 +82,40 @@ uploadButton.addEventListener('click', uploadEmbeddings);
 
 // Initialize button state
 updateDownloadButtonState();
+
+const chatForm = document.getElementById('chat-form');
+const chatInput = document.getElementById('chat-input');
+const chatBox = document.getElementById('chat-box');
+
+const sendMessage = async (message) => {
+    const response = await fetch('/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message })
+    });
+    const data = await response.json();
+    return data.reply;
+};
+
+chatForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const userMessage = chatInput.value;
+    if (userMessage.trim() === '') return;
+
+    const userMessageElement = document.createElement('div');
+    userMessageElement.textContent = `You: ${userMessage}`;
+    chatBox.appendChild(userMessageElement);
+
+    chatInput.value = '';
+
+    try {
+        const reply = await sendMessage(userMessage);
+        const replyMessageElement = document.createElement('div');
+        replyMessageElement.textContent = `Bot: ${reply}`;
+        chatBox.appendChild(replyMessageElement);
+    } catch (err) {
+        console.error('Error sending message:', err);
+    }
+});
